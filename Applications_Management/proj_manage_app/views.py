@@ -64,6 +64,42 @@ def add_member(request, project_id):
   project.save()
   return redirect('/proj_manage/home')
 
+def archive(request, project_id):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
+  project = Project.objects.get(id = project_id)
+  project.is_archived = True
+  project.save()
+  return redirect('/proj_manage/home')
+
+def un_archive(request, project_id):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
+  project = Project.objects.get(id = project_id)
+  project.is_archived = False
+  project.save()
+  return redirect('/proj_manage/home')
+
+def completed(request, project_id, task_id):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
+  task = Task.objects.get(id = task_id)
+  task.is_completed = True
+  task.save()
+  return redirect(f'/proj_manage/{project_id}')
+
+def un_complete(request, project_id, task_id):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
+  task = Task.objects.get(id = task_id)
+  task.is_completed = False
+  task.save()
+  return redirect(f'/proj_manage/{project_id}')
+
 #! Direct Links
 
 def home(request):

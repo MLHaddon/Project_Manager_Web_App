@@ -22,6 +22,26 @@
       justify-content: left;
       align-items: center;
     }
+    .tasks {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
+    .completed_tasks {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
     .inner ul {
       background-color: rgb(185, 189, 223);
       margin: 10px;
@@ -57,12 +77,32 @@
       position:right;
       border-radius: 9px; 
     }
+    #box2 {
+      padding:5px;
+      width:200px;
+      z-index:10;
+      position:relative;  
+      border-radius: 9px; 
+    }
+    #box2 form {
+      background:#006699;
+      padding:5px;
+      display:none;
+      position:relative;
+      border-radius: 9px; 
+    }
     input[type="submit"] {
       background:none;
       color:#fff;
       border:none;
       text-align:left;
       cursor:pointer;
+    }
+    .active_tasks {
+      margin-left: 20px;
+    }
+    .completed {
+      margin-left: 20px;
     }
   </style>
 </head>
@@ -86,6 +126,13 @@
     </div>
   </div>
   <div class="toolbar">
+    <form action="/proj_manage/view" method="post">
+      {% csrf_token %}
+      <select name="project_view">
+        <option value="/proj_manage/project_view">Project View</option>
+        <option value="/proj_manage/calendar_view">Calendar view</option>
+      </select>
+    </form>
     <h1>{{project.title}}</h1>
     <form action="/proj_manage/favorite" method="post">
       {% csrf_token %}
@@ -101,20 +148,18 @@
       {% endfor %}
     </div>
   </div>
-  <div class="projects">
+  <button class="active_tasks">Active Tasks</button>
+  <div class="tasks">
     {% for task in project.project_tasks.all %}
     {% if task.is_completed == False %}
       <div class="inner">
         <ul>
           <li><h2>{{task.title}}</h2></li>
           <li id="desc">{{task.desc}}</li>
-          <li>Author: {{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          <li>{{assigned_user.first_name}} {{assigned_user.last_name}}</li>
           <li>
             <div class="list_buttons">
-              <form action="/proj_manage/{{project.id}}/{{task.id}}/edit" method="post">
-                {% csrf_token %}
-                <button type="submit">Edit</button>
-              </form>
+              <button type="submit" class="edit_task">Edit</button>
               <form action="/proj_manage/{{project.id}}/{{task.id}}/completed" method="post">
                 {% csrf_token %}
                 <button type="submit">Complete</button>
@@ -122,6 +167,21 @@
               <form action="/proj_manage/{{project.id}}/{{task.id}}/comment" method="post">
                 {% csrf_token %}
                 <button type="submit">Comment</button>
+              </form>
+            </div>
+            <div id="box2">
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/edit_task" id="form" method="post">
+                {% csrf_token %}
+                <h3>Add a Task</h3>
+                <p>Title: <input type="text" name="title" value="{{task.title}}"></p>
+                <p>Desc: <input type="text" name="desc" value="{{task.desc}}"></p>
+                <p>Due Date (Optional): <input type="date" name="due" value="{{task.due_date}}"></p>
+                <p>Assigned user (Can be blank): <select name="user">
+                  {% for user in users %}
+                    <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                  {% endfor %}
+                </select></p>
+                <p><button type="submit">Add</button></p>
               </form>
             </div>
           </li>
@@ -146,9 +206,47 @@
       </form>
     </div>
   </div>
+  <button class="completed">Completed Tasks</button>
+  <div class="completed_tasks">
+    {% for task in project.project_tasks.all %}
+    {% if task.is_completed == True %}
+      <div class="inner">
+        <ul>
+          <li><h2>{{task.title}}</h2></li>
+          <li id="desc">{{task.desc}}</li>
+          {% if task.assigned_user != null %}
+            <li>{{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          {% endif %}
+          <li>
+            <div class="list_buttons">
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/un_complete" method="post">
+                {% csrf_token %}
+                <button type="submit">Un-Complete</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    {% endfor %}
+  </div>
   <script>
-    $(".button").click(function() {  
+    $(".button").click(() => {  
       $("#box form").toggle("slow");
+      return false;
+    });
+    $(".edit_task").click(() => {
+      $("#box2 form").toggle("slow");
+      return false;
+    });
+    $(".tasks").hide();
+    $(".active_tasks").click(() => {
+      $(".tasks").fadeToggle("slow");
+      return false;
+    });
+    $(".completed_tasks").hide();
+    $(".completed").click(() => {
+      $(".completed_tasks").fadeToggle("slow");
       return false;
     });
   </script>

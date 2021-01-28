@@ -32,6 +32,16 @@
       justify-content: left;
       align-items: center;
     }
+    .completed_tasks {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
     .inner ul {
       background-color: rgb(185, 189, 223);
       margin: 10px;
@@ -74,7 +84,14 @@
       text-align:left;
       cursor:pointer;
     }
-    #title {
+    .active_projects {
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+    .active_tasks {
+      margin-left: 20px;
+    }
+    .completed {
       margin-left: 20px;
     }
   </style>
@@ -92,13 +109,20 @@
         {% csrf_token %}
         <button type="submit">Logout</button>
       </form>
-      <form action="/proj_manage/profile" method="post">
+      <form action="/proj_manage/{{user.id}}/profile" method="post">
         {% csrf_token %}
         <button type="submit">Profile</button>
       </form>
     </div>
   </div>
   <div class="toolbar">
+    <form action="/proj_manage/view" method="post">
+      {% csrf_token %}
+      <select name="project_view">
+        <option value="/proj_manage/project_view">Project View</option>
+        <option value="/proj_manage/calendar_view">Calendar view</option>
+      </select>
+    </form>
     <h1>{{profile_user.first_name}} {{profile_user.last_name}}'s Profile</h1>
     <form action="/proj_manage/favorite" method="post">
       {% csrf_token %}
@@ -114,7 +138,7 @@
       {% endfor %}
     </div>
   </div>
-  <h1 id="title">My Active Projects</h1>
+  <button class="active_projects">Active Projects</button>
   <div class="projects">
     {% for project in user_projects %}
     {% if project.is_archived == False %}
@@ -167,7 +191,7 @@
       </form>
     </div>
   </div>
-  <h1 id="title">My Active Tasks</h1>
+  <button class="active_tasks">Active Tasks</button>
   <div class="tasks">
     {% for task in user_tasks %}
     {% if task.is_completed == False %}
@@ -175,7 +199,9 @@
         <ul>
           <li><h2>{{task.title}}</h2></li>
           <li id="desc">{{task.desc}}</li>
-          <li>Author: {{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          {% if task.assigned_user != null %}
+            <li>{{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          {% endif %}
           <li>
             <div class="list_buttons">
               <form action="/proj_manage/{{project.id}}/{{task.id}}/edit" method="post">
@@ -197,9 +223,48 @@
     {% endif %}
     {% endfor %}
   </div>
+  <button class="completed">Completed Tasks</button>
+  <div class="completed_tasks">
+    {% for task in user_tasks %}
+    {% if task.is_completed == True %}
+      <div class="inner">
+        <ul>
+          <li><h2>{{task.title}}</h2></li>
+          <li id="desc">{{task.desc}}</li>
+          {% if task.assigned_user != null %}
+            <li>{{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          {% endif %}
+          <li>
+            <div class="list_buttons">
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/un_complete" method="post">
+                {% csrf_token %}
+                <button type="submit">Un-Complete</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    {% endfor %}
+  </div>
   <script>
   $(".button").click(function() {  
     $("#box form").toggle("slow");
+    return false;
+  });
+  $(".projects").hide();
+  $(".active_projects").click(() => {
+    $(".projects").fadeToggle("slow");
+    return false;
+  });
+  $(".tasks").hide();
+  $(".active_tasks").click(() => {
+    $(".tasks").fadeToggle("slow");
+    return false;
+  });
+  $(".completed_tasks").hide();
+  $(".completed").click(() => {
+    $(".completed_tasks").fadeToggle("slow");
     return false;
   });
   </script>

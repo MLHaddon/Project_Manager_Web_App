@@ -78,13 +78,6 @@
       text-align:left;
       cursor:pointer;
     }
-    .view_archive {
-      margin-top: 10px;
-      margin-left: 20px;
-    }
-    .view_projects {
-      margin-left: 20px;
-    }
   </style>
 </head>
 <body>
@@ -129,29 +122,6 @@
       {% endfor %}
     </div>
   </div>
-  <button class="view_archive">Archive</button>
-  <div class="archive">
-    {% for project in projects %}
-    {% if project.is_archived == True %}
-    <div class="inner">
-      <ul>
-        <li><h2>{{project.title}}</h2></li>
-        <li id="desc">{{project.desc}}</li>
-        <li>Author: {{project.admin.first_name}} {{project.admin.last_name}}</li>
-        <li>
-          <div class="list_buttons">
-            <form action="/proj_manage/{{project.id}}/un_archive" method="post">
-              {% csrf_token %}
-              <button type="submit">Un-Archive</button>
-            </form>
-          </div>
-        </li>
-      </ul>
-    </div>
-    {% endif %}
-    {% endfor %}
-  </div>
-  <button class="view_projects">Projects</button>
   <div class="projects">
     {% for project in projects %}
     {% if project.is_archived == False %}
@@ -213,17 +183,6 @@
   });
   $(".add_member").click(() => {
     $("#box2 form").toggle("slow");
-    return false;
-  });
-  $(".projects").hide();
-  $(".view_projects").click(() => {
-    $(".projects").fadeToggle("slow");
-    return false;
-  });
-  $(".archive").hide();
-  $(".view_archive").click(() => {
-    $(".archive").fadeToggle("slow");
-    return false;
   });
   </script>
 </body>
