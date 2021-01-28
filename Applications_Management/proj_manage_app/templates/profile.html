@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Document</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
+  </script>
+  <style>
+    body {
+      background-color: rgb(99, 106, 122);
+    }
+    .projects {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
+    .tasks {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
+    .inner ul {
+      background-color: rgb(185, 189, 223);
+      margin: 10px;
+      padding: 10px;
+      width: 300px;
+      min-height: 400px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: end;
+      border-radius: 9px; 
+    }
+    #desc {
+      min-height: 300px;
+    }
+    .list_buttons {
+      display: inline-flex;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    #box {
+      padding:5px;
+      width:200px;
+      z-index:10;
+      position:right;  
+      border-radius: 9px; 
+    }
+    #box form {
+      background:#006699;
+      padding:5px;
+      display:none;
+      position:right;
+      border-radius: 9px; 
+    }
+    input[type="submit"] {
+      background:none;
+      color:#fff;
+      border:none;
+      text-align:left;
+      cursor:pointer;
+    }
+    #title {
+      margin-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <form action="/proj_manage/index" method="post">
+      {% csrf_token %}
+      <button type="submit">Home</button>
+    </form>
+    <h1>MyPro</h1>
+    <div class="links">
+      <button class="button">+</button>
+      <form action="/logout" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+      </form>
+      <form action="/proj_manage/profile" method="post">
+        {% csrf_token %}
+        <button type="submit">Profile</button>
+      </form>
+    </div>
+  </div>
+  <div class="toolbar">
+    <h1>{{profile_user.first_name}} {{profile_user.last_name}}'s Profile</h1>
+    <form action="/proj_manage/favorite" method="post">
+      {% csrf_token %}
+      <button type="submit">Favorite</button>
+    </form>
+    <div class="link_list">
+      <div>All Users: </div>
+      {% for user in users %}
+        <form action="/proj_manage/{{user.id}}/profile" method="post">
+          {% csrf_token %}
+          <button type="submit">|-- {{user.first_name}} {{user.last_name}} --|</button>
+        </form>
+      {% endfor %}
+    </div>
+  </div>
+  <h1 id="title">My Active Projects</h1>
+  <div class="projects">
+    {% for project in user_projects %}
+    {% if project.is_archived == False %}
+      <div class="inner">
+        <ul>
+          <li><h2>{{project.title}}</h2></li>
+          <li id="desc">{{project.desc}}</li>
+          <li>Author: {{project.admin.first_name}} {{project.admin.last_name}}</li>
+          <li>
+            <div class="list_buttons">
+              <form action="/proj_manage/{{project.id}}" method="post">
+                {% csrf_token %}
+                <button type="submit">View Tasks</button>
+              </form>
+              <form action="/proj_manage/{{project.id}}/archive" method="post">
+                {% csrf_token %}
+                <button type="submit">Archive</button>
+              </form>
+              <form action="/proj_manage/{{project.id}}/comment" method="post">
+                {% csrf_token %}
+                <button type="submit">Comment</button>
+              </form>
+              <form action="/proj_manage/{{project.id}}/add_member" method="post">
+                {% csrf_token %}
+                <button type="submit">Add Member</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    {% endfor %}
+    <button class="button">+</button>
+    <div id="box">
+      <form action="/proj_manage/create_project" id="form" method="post">
+        {% csrf_token %}
+        <h3>Create a Project</h3>
+        <p>Title: <input type="text" name="title"></p>
+        <p>Desc: <input type="text" name="desc"></p>
+        <p>Due Date (Optional): <input type="date" name="due"></p>
+        <p>
+          Team Members: 
+          <select name="users" id="users" multiple="multiple">
+            {% for user in users %}
+              <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+            {% endfor %}
+          </select>
+        </p>
+        <p><button type="submit">Create</button></p>
+      </form>
+    </div>
+  </div>
+  <h1 id="title">My Active Tasks</h1>
+  <div class="tasks">
+    {% for task in user_tasks %}
+    {% if task.is_completed == False %}
+      <div class="inner">
+        <ul>
+          <li><h2>{{task.title}}</h2></li>
+          <li id="desc">{{task.desc}}</li>
+          <li>Author: {{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          <li>
+            <div class="list_buttons">
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/edit" method="post">
+                {% csrf_token %}
+                <button type="submit">Edit</button>
+              </form>
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/completed" method="post">
+                {% csrf_token %}
+                <button type="submit">Complete</button>
+              </form>
+              <form action="/proj_manage/{{project.id}}/{{task.id}}/comment" method="post">
+                {% csrf_token %}
+                <button type="submit">Comment</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <script>
+  $(".button").click(function() {  
+    $("#box form").toggle("slow");
+    return false;
+  });
+  </script>
+</body>
+</html>
