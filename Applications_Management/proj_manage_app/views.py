@@ -101,10 +101,22 @@ def un_complete(request, project_id, task_id):
   return redirect(f'/proj_manage/{project_id}')
 
 def favorite(request):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
   theyLikedIt = Favorite.objects.get(id = 1)
   theyLikedIt.count += 1
   theyLikedIt.save()
   return redirect('/proj_manage/home')
+
+def assign_task(request, project_id, task_id):
+  if not 'user_id' in request.session:
+    messages.error(request, 'You must be logged in to do that.')
+    return redirect('/main')
+  task = Task.objects.get(id = task_id)
+  task.assigned_user = User.objects.get(id = request.POST['task_admin'])
+  task.save()
+  return redirect(f'/proj_manage/{project_id}')
 
 #! Direct Links
 

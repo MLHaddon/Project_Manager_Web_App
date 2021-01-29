@@ -14,4 +14,5 @@ urlpatterns = [
   path('<int:project_id>/un_archive', views.un_archive),
   path('<int:project_id>/<int:task_id>/completed', views.completed),
   path('<int:project_id>/<int:task_id>/un_complete', views.un_complete),
+  path('<int:project_id>/<int:task_id>/assign_task', views.assign_task),
 ]

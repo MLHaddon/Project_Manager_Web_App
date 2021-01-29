@@ -91,6 +91,13 @@
       position:relative;
       border-radius: 9px; 
     }
+    .task_admin {
+      padding:5px;
+      width:200px;
+      z-index:10; 
+      border-radius: 9px; 
+      background:#006699;
+    }
     input[type="submit"] {
       background:none;
       color:#fff;
@@ -157,7 +164,7 @@
         <ul>
           <li><h2>{{task.title}}</h2></li>
           <li id="desc">{{task.desc}}</li>
-          <li>{{assigned_user.first_name}} {{assigned_user.last_name}}</li>
+          <li>{{task.assigned_user.first_name}} {{task.assigned_user.last_name}}</li>
           <li>
             <div class="list_buttons">
               <button type="submit" class="edit_task">Edit</button>
@@ -169,23 +176,36 @@
                 {% csrf_token %}
                 <button type="submit">Comment</button>
               </form>
-            </div>
-            <div id="box2">
-              <form action="/proj_manage/{{project.id}}/{{task.id}}/edit_task" id="form" method="post">
-                {% csrf_token %}
-                <h3>Add a Task</h3>
-                <p>Title: <input type="text" name="title" value="{{task.title}}"></p>
-                <p>Desc: <input type="text" name="desc" value="{{task.desc}}"></p>
-                <p>Due Date (Optional): <input type="date" name="due" value="{{task.due_date}}"></p>
-                <p>Assigned user (Can be blank): <select name="user">
-                  {% for user in users %}
-                    <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
-                  {% endfor %}
-                </select></p>
-                <p><button type="submit">Add</button></p>
-              </form>
+              <button type="submit" class="assign_task">Assign Task</button>
             </div>
           </li>
+          <div class="task_admin">
+            <form action="/proj_manage/{{project.id}}/{{task.id}}/assign_task" method="post">
+              {% csrf_token %}
+                Assigned Task > Team Member: 
+              <select name="task_admin">
+                {% for user in users %}
+                  <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Assign</button>
+            </form>
+          </div>
+          <div id="box2">
+            <form action="/proj_manage/{{project.id}}/{{task.id}}/edit_task" id="form" method="post">
+              {% csrf_token %}
+              <h3>Add a Task</h3>
+              <p>Title: <input type="text" name="title" value="{{task.title}}"></p>
+              <p>Desc: <input type="text" name="desc" value="{{task.desc}}"></p>
+              <p>Due Date (Optional): <input type="date" name="due" value="{{task.due_date}}"></p>
+              <p>Assigned Task > Team Member: <select name="user">
+                {% for user in users %}
+                  <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                {% endfor %}
+              </select></p>
+              <p><button type="submit">Add</button></p>
+            </form>
+          </div>
         </ul>
       </div>
     {% endif %}
@@ -248,6 +268,11 @@
     $(".completed_tasks").hide();
     $(".completed").click(() => {
       $(".completed_tasks").fadeToggle("slow");
+      return false;
+    });
+    $(".task_admin").hide();
+    $(".assign_task").click(() => {
+      $(".task_admin").toggle("slow");
       return false;
     });
   </script>
