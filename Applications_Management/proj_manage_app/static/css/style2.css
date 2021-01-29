@@ -18,7 +18,7 @@ button {
   font-style: normal; 
   font-variant: normal; 
   text-transform: none;   
-  border: 2px solid rgb(28, 110, 164); 
+  border: 2px solid rgb(18, 169, 207); 
 }
 button:hover {
 background: #1C6EA4; 
@@ -40,7 +40,7 @@ select {
   font-style: normal; 
   font-variant: normal; 
   text-transform: none;   
-  border: 2px solid rgb(28, 110, 164); 
+  border: 2px solid rgb(18, 169, 207); 
 }
 select:hover {
 background: #1C6EA4; 

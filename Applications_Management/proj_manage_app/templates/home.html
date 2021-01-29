@@ -22,6 +22,16 @@
       justify-content: left;
       align-items: center;
     }
+    .archive {
+      margin-top: 2px;
+      margin-left: 10px;
+      margin-right: 10px;
+      padding: 4px;
+      width: 98.5%;
+      display: inline-flex;
+      justify-content: left;
+      align-items: center;
+    }
     .inner ul {
       background-color: rgb(185, 189, 223);
       margin: 10px;
@@ -78,11 +88,11 @@
       text-align:left;
       cursor:pointer;
     }
-    .view_archive {
+    .view_projects {
       margin-top: 10px;
       margin-left: 20px;
     }
-    .view_projects {
+    .view_archive {
       margin-left: 20px;
     }
   </style>
@@ -117,7 +127,8 @@
     <h1>Project List</h1>
     <form action="/proj_manage/favorite" method="post">
       {% csrf_token %}
-      <button type="submit">Favorite</button>
+      <button type="submit">Favorite This Project</button>
+      Current Likes: {{fav.count}}
     </form>
     <div class="link_list">
       <div>All Users: </div>
@@ -128,28 +139,6 @@
         </form>
       {% endfor %}
     </div>
-  </div>
-  <button class="view_archive">Archive</button>
-  <div class="archive">
-    {% for project in projects %}
-    {% if project.is_archived == True %}
-    <div class="inner">
-      <ul>
-        <li><h2>{{project.title}}</h2></li>
-        <li id="desc">{{project.desc}}</li>
-        <li>Author: {{project.admin.first_name}} {{project.admin.last_name}}</li>
-        <li>
-          <div class="list_buttons">
-            <form action="/proj_manage/{{project.id}}/un_archive" method="post">
-              {% csrf_token %}
-              <button type="submit">Un-Archive</button>
-            </form>
-          </div>
-        </li>
-      </ul>
-    </div>
-    {% endif %}
-    {% endfor %}
   </div>
   <button class="view_projects">Projects</button>
   <div class="projects">
@@ -205,6 +194,28 @@
         <p><button type="submit">Create</button></p>
       </form>
     </div>
+  </div>
+  <button class="view_archive">Archive</button>
+  <div class="archive">
+    {% for project in projects %}
+    {% if project.is_archived == True %}
+    <div class="inner">
+      <ul>
+        <li><h2>{{project.title}}</h2></li>
+        <li id="desc">{{project.desc}}</li>
+        <li>Author: {{project.admin.first_name}} {{project.admin.last_name}}</li>
+        <li>
+          <div class="list_buttons">
+            <form action="/proj_manage/{{project.id}}/un_archive" method="post">
+              {% csrf_token %}
+              <button type="submit">Un-Archive</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+    {% endfor %}
   </div>
   <script>
   $(".button").click(() => {  

@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
 from login_app.models import User
-from .models import Project, Task
+from .models import Project, Task, Favorite
 
 #! Redirects
 
@@ -100,6 +100,12 @@ def un_complete(request, project_id, task_id):
   task.save()
   return redirect(f'/proj_manage/{project_id}')
 
+def favorite(request):
+  theyLikedIt = Favorite.objects.get(id = 1)
+  theyLikedIt.count += 1
+  theyLikedIt.save()
+  return redirect('/proj_manage/home')
+
 #! Direct Links
 
 def home(request):
@@ -110,6 +116,7 @@ def home(request):
     'user': User.objects.get(id = request.session['user_id']),
     'users': User.objects.all(),
     'projects': Project.objects.all(),
+    'fav': Favorite.objects.get(id = 1)
   }
   return render(request, 'home.html', context)
 

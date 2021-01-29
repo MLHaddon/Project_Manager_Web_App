@@ -99,6 +99,7 @@
       cursor:pointer;
     }
     .active_tasks {
+      margin-top: 10px;
       margin-left: 20px;
     }
     .completed {
@@ -136,7 +137,7 @@
     <h1>{{project.title}}</h1>
     <form action="/proj_manage/favorite" method="post">
       {% csrf_token %}
-      <button type="submit">Favorite</button>
+      <button type="submit">Favorite This Project</button>
     </form>
     <div class="link_list">
       <div>Project Members: </div>

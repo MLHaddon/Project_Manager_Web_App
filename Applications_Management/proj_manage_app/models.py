@@ -40,4 +40,9 @@ class Task(models.Model):
   created_at = models.DateTimeField(auto_now_add = True)
   updated_at = models.DateTimeField(auto_now = True)
   objects = TaskManager()
+
+class Favorite(models.Model):
+  count = models.IntegerField(default = 0)
+  created_at = models.DateTimeField(auto_now_add = True)
+  updated_at = models.DateTimeField(auto_now = True)
  
